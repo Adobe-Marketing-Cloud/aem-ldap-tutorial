@@ -7,7 +7,7 @@ In this step we show you how to create your own IDP. The IDP provided in this ex
 
 The code for the new IDP is located in the [example-idp](example-idp/) directory. The majority of the code is in the [JsonFileIdentityProvider.java](example-idp/src/main/java/com/adobe/gems/exampleidp/impl/JsonFileIdentityProvider.java) class. The code is very simple and should be self explanatory.
 
-**!** If you want to fast forward, here's the [json-idp-config-pkg](json-idp-config-pkg) package with the configuration. all you need to do is to build and deploy the bundle.
+**!** If you want to fast forward, here's the [json-idp-config-pkg.zip](json-idp-config-pkg.zip) package with the configuration. all you need to do is to build and deploy the bundle.
 
 ### Requirements
 1. Running vanilla AEM 6.1 installation
