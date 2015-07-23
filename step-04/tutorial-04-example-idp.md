@@ -46,10 +46,12 @@ Similar to the steps when configuring the ldap idp, we need to create a configur
 
 Enter the following information:
 
-| Name          | Value
-|------------------------------------
-| Provider Name | json
-| JSON Filename | authorizables.json
+
+| Name          | Value              |
+|---------------|--------------------|
+| Provider Name | json               |
+| JSON Filename | authorizables.json |
+
 
 ![config json idp](images/example-02-configure-idp.png)
 
