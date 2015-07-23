@@ -3,10 +3,9 @@ AEM 6.1 Authentication Tutorial Bonus
 
 Step 04 - Creating your own IDP
 -------------------------------
+In this step we show you how to create your own IDP. The IDP provided in this example is very simple as it reads the authorizable data from a JSON file. The sample data in [authorizables.json](authorizables.json) provides the crews of 2 fictivous spaceships.
 
-In this step we show you how to create your own IDP. The IDP provided in this example is very simple as it reads the authorizable data from the JSON file. The sample data in [authorizables.json](authorizables.json) provides the crews of 2 fictivous spaceships.
-
-the code for the new IDP is located in the [example-idp](example-idp/) directory. The majority of the code is in the [JsonFileIdentityProvider.java](example-idp/src/main/java/com/adobe/gems/exampleidp/impl/JsonFileIdentityProvider.java) class.
+The code for the new IDP is located in the [example-idp](example-idp/) directory. The majority of the code is in the [JsonFileIdentityProvider.java](example-idp/src/main/java/com/adobe/gems/exampleidp/impl/JsonFileIdentityProvider.java) class. The code is very simple and should be self explanatory.
 
 **!** If you want to fast forward, here's the [json-idp-config-pkg](json-idp-config-pkg) package with the configuration. all you need to do is to build and deploy the bundle.
 
@@ -15,7 +14,6 @@ the code for the new IDP is located in the [example-idp](example-idp/) directory
 2. Apache maven
 
 #### 1. build the bundle
-
 - open a terminal or command prompt and navigate into the `example-idp` directory.
 - build and install the bundle with `mvn clean install sling:install`
 
@@ -37,13 +35,14 @@ the output should show something like:
 ...
 ````
 
-#### 2. configure the idp
+This will build the bundle and automatically deploy it into an AEM instance running at localhost:4502.
 
-similar to the steps when configuring the ldap idp, we need to create a configuration for our new IDP.
+#### 2. configure the identity provider
+Similar to the steps when configuring the ldap idp, we need to create a configuration for our new IDP.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"json file identity provider"_ factory config and click on the plus **+** button.
 
-![image](example-01-find-json-idp.png)
+![create json idp](images/example-01-find-json-idp.png)
 
 Enter the following information:
 
@@ -52,10 +51,9 @@ Enter the following information:
 | Provider Name | json
 | JSON Filename | authorizables.json
 
-![image](example-02-configure-idp.png)
+![config json idp](images/example-02-configure-idp.png)
 
 #### 3. copy the authorizables json file
-
 As soon as you configure the IDP, you should see a log entry like this:
 
 ```
@@ -64,15 +62,12 @@ As soon as you configure the IDP, you should see a log entry like this:
 
 as you can see, the file that the IDP needs is relative to where you started AEM. so copy the sample [authorizables.json](authorizables.json) there.
 
-
 #### 4. configure the sync handler
-
-similar to the steps when configuring the sync handler for the ldap idp, we need to create a new configuration here as well.
-
+Similar to the steps when configuring the sync handler for the ldap idp, we need to create a new configuration here as well.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"Default Sync Handler"_ factory config and click on the plus **+** button.
 
-![image](aem-03-find-synchandler.png)
+![find sync handler](../step-02/images/aem-03-find-synchandler.png)
 
 Enter the following information:
 
@@ -90,17 +85,16 @@ Enter the following information:
 | Group property mapping        |
 | Group Path Prefix             | `/seven_skies`
 
-And save the config
+And save the config. We already add the mappings for the extra profile properties, as we learned in [Step 03](../step-03/tutorial-03-test.md)
 
-![image](example-03-configure-synchandler.png)
+![configure synchandler](images/example-03-configure-synchandler.png)
 
 #### 5. configure the external login module
-
 As before, the external login module is the bridge between the login, the idp and the sync handler. so add a new configuration that pairs the new `json` idp with the `tutorial_handler` sync handler
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"External Login Module"_ factory config and click on the plus **+** button.
 
-![image](aem-05-find-loginmodule.png)
+![create login module](../step-02/images/aem-05-find-loginmodule.png)
 
 Enter the following information:
 
@@ -114,23 +108,21 @@ Enter the following information:
 
 And save the config
 
-![image](example-04-configure-loginmodule.png)
+![configure loginmodule](images/example-04-configure-loginmodule.png)
 
 #### 6. test that it works
-
 - ensure to logout previous session or clear all browser cookie or use a different browser, hostname or IP
 - open browser to aem: http://127.0.0.1:4502/
 - login as `kirk` with password `pass`
 
-if the login succeeds, you should now see the authoring environment because we configured the `user.autoMembership` to include the `contributor` group.
+If the login succeeds, you should now see the authoring environment because we configured the `user.autoMembership` to include the `contributor` group.
 
 Looking at the users and groups should show the group _enterprise_ and his member(s):
 
 - open the [AEM useradmin](http://localhost:4502/useradmin)
 - search for `enterprise`
-
-![image](example-05-useradmin.png)
-
 - after that, use the JMX console to import the test of the space team!
+
+![useradmin](images/example-05-useradmin.png)
 
 

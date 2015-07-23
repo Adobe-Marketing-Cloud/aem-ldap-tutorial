@@ -6,6 +6,8 @@ Step 02 - Configure LDAP Authentication in AEM
 
 In this step we configure AEM 6.1 to use our newly created LDAP server for login.
 
+**!** If you want to fast forward, here's the [ldap-first-config-pkg.zip](ldap-first-config-pkg.zip) package with the resuling configuration of this step.
+
 ### Requirements
 1. LDAP Server with example data (preferably from previous step 01)
 2. Running vanilla AEM 6.1 installation
@@ -16,15 +18,16 @@ It is always advisable to configure LDAP related logging during initial setup.
 - open [Sling Log Support](http://localhost:4502/system/console/slinglog) in the Felix console
 - add `org.apache.jackrabbit.oak.spi.security.authentication.external` as category for controlling the logging of the external login module and sync handler
 - add `org.apache.jackrabbit.oak.security.authentication.ldap` as category for controlling the logging of the LDAP identity provider.
+- optionally, add `org.apache.directory` as a category for very lowlevel logging of the ldap client calls.
 
-![image](aem-00-setup-logging.png)
+![setup logging](images/aem-00-setup-logging.png)
 
 #### 2. configure LDAP identity provider
 Now we configure the LDAP idp. this is the piece that connects to the LDAP server.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"ldap identity provider"_ factory config and click on the plus **+** button.
 
-![image](aem-01-find-ldap-idp.png)
+![create idp config](images/aem-01-find-ldap-idp.png)
 
 Enter the following information:
 
@@ -55,14 +58,14 @@ Enter the following information:
 
 And save the config.
 
-![image](aem-02-configure-ldap-idp.png)
+![configure ldap idp](images/aem-02-configure-ldap-idp.png)
 
 #### 3. configure Default Sync Handler
 The sync handler is responsible to synchronize the external users with the local repository.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"Default Sync Handler"_ factory config and click on the plus **+** button.
 
-![image](aem-03-find-synchandler.png)
+![create sync config](images/aem-03-find-synchandler.png)
 
 Enter the following information:
 
@@ -82,14 +85,14 @@ Enter the following information:
 
 And save the config
 
-![image](aem-04-configure-synchandler.png)
+![sync config](images/aem-04-configure-synchandler.png)
 
 #### 4. configure the external login module
 The external login module is the bridge between the login, the idp and the sync handler.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"External Login Module"_ factory config and click on the plus **+** button.
 
-![image](aem-05-find-loginmodule.png)
+![create login module](images/aem-05-find-loginmodule.png)
 
 Enter the following information:
 
@@ -103,14 +106,14 @@ Enter the following information:
 
 And save the config
 
-![image](aem-06-configure-loginmodule.png)
+![configure loginmodule](images/aem-06-configure-loginmodule.png)
 
 #### 5. verify the JAAS console
 The external login module should now show up in the JAAS console:
 
 - open the [Felix JAAS Console](http://localhost:4502/system/console/jaas)
 
-![image](aem-07-jaas-console.png)
+![jaas console](images/aem-07-jaas-console.png)
 
 
 

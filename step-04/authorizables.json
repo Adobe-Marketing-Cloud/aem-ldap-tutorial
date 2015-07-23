@@ -1,0 +1,65 @@
+{
+	"enterprise": {
+		"id": "enterprise",
+		"members": ["kirk", "spock", "mccoy"]
+	},
+	"kirk": {
+		"id": "kirk",
+		"fullname": "James T. Kirk",
+		"givenname": "James T.",
+		"familyname": "Kirk",
+		"email": "kirk@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["enterprise"]
+	},
+	"spock": {
+		"id": "spock",
+		"fullname": "Spock",
+		"givenname": "Spock",
+		"familyname": "",
+		"email": "spock@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["enterprise"]
+	},
+	"mccoy": {
+		"id": "mcccoy",
+		"fullname": "Leonard McCoy",
+		"givenname": "Leonard",
+		"familyname": "McCoy",
+		"email": "mccoy@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["enterprise"]
+	},
+
+	"voyager": {
+		"id": "voyager",
+		"members": ["janeway", "chakotay", "tuvok"]
+	},
+	"janeway": {
+		"id": "janeway",
+		"fullname": "Kathryn Janeway",
+		"givenname": "Kathryn",
+		"familyname": "Janeway",
+		"email": "janeway@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["voyager"]
+	},
+	"chakotay": {
+		"id": "chakotay",
+		"fullname": "Chakotay",
+		"givenname": "Chakotay",
+		"familyname": "",
+		"email": "chakotay@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["voyager"]
+	},
+	"tuvok": {
+		"id": "tuvok",
+		"fullname": "Tuvok",
+		"givenname": "Tuvok",
+		"familyname": "",
+		"email": "tuvok@seven_skies.example.com",
+		"password": "pass",
+		"groups": ["voyager"]
+	}
+}

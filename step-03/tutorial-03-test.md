@@ -6,6 +6,9 @@ Step 03 - Test that it works!
 
 In this step we verify that the LDAP authentication works and if the users are synced properly.
 
+**!** If you want to fast forward, here's the [ldap-config-with-profile-pkg.zip](ldap-config-with-profile-pkg.zip) package with the resuling configuration of this step.
+
+
 ### Requirements
 1. LDAP Server with example data (from step 01)
 2. AEM 6.1 installation with configured LDAP authentication (from step 02)
@@ -24,14 +27,14 @@ Looking at the users and groups should show the user _William Bush_ and his grou
 - open the [AEM useradmin](http://localhost:4502/useradmin)
 - search for `seven`
 
-![image](test-01-useradmin.png)
+![useradmin](images/test-01-useradmin.png)
 
-If you look at the log files, you should see something like here: [log-snip-01.md](log-snip-01.md)
+If you look at the log files, you should see something like this here: [log-snip-01.md](log-snip-01.md)
 
 #### 2. add more config for first- and givenname
-as you can see in the AEM user admin, the fields for _First Name_ and _Last Name_ are empty, because the useradmin reads the `profile/givenName` and `profile/familyName`.
+As you can see in the AEM user admin, the fields for _First Name_ and _Last Name_ are empty, because the AEM useradmin uses the `profile/givenName` and `profile/familyName` properties.
 
-so let's alter the config so that this information is populated as well.
+So let's alter the config so that this information is populated as well.
 
 - open the [Felix Configuration Manager](http://localhost:4502/system/console/configMgr) and search for the _"Default Sync Handler"_ factory config and click on the first confg to edit it
 
@@ -46,31 +49,30 @@ Enter the following information:
 | User Expiration Time          | `10s`
 | User property mapping         | `rep:fullname=cn` <br> `profile/nt:primaryType="nt:unstructured"` <br> `profile/givenName=givenname` <br> `profile/familyName=sn` |
 
-![image](test-02-newconfig.png)
+![new config](images/test-02-newconfig.png)
 
 And save the config.
 
-Now if you logout and login again with `wbush` the user should be resynced.
+Now, if you logout and login again with `wbush` the user should be resynced.
 
-![image](test-03-useradmin-withprops.png)
+![useradmin](images/test-03-useradmin-withprops.png)
 
 #### 3. use JMX console to sync more users
-
 Oak comes with a default JMX mbean that allows you to control the sync handler. 
 
 - open the [Felix JMX Console](http://localhost:4502/system/console/jmx) and search for the _"External Identity"_ bean and select it
 
-![image](test-04-jmx-console.png)
+![jmx console](images/test-04-jmx-console.png)
 
-![image](test-05-jmx-synchandler.png)
+![jmx synchandler](images/test-05-jmx-synchandler.png)
 
-- click on `syncAllExternalUsers()` and then on `invoke`. this will collect all the users from the IDP and sync them with the repository. you will see an `add` op property for all newly added users, and an `upd` for the updated ones.
+- click on `syncAllExternalUsers()` and then on `invoke`. this will collect all the users from the IDP and sync them with the repository. you will see an `add` _op_ property for all newly added users, and an `upd` for the updated ones.
 
-![image](test-06-jmx-syncexternalusers.png)
+![sync users](images/test-06-jmx-syncexternalusers.png)
 
 checking back the user admin shows the newly imported users and groups
 
-![image](test-07-useradmin-more.png)
+![useradmin](images/test-07-useradmin-more.png)
 
 
 
