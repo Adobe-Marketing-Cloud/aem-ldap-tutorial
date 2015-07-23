@@ -3,7 +3,7 @@ AEM 6.1 Authentication Tutorial Bonus
 
 Step 04 - Creating your own IDP
 -------------------------------
-In this step we show you how to create your own IDP. The IDP provided in this example is very simple as it reads the authorizable data from a JSON file. The sample data in [authorizables.json](authorizables.json) provides the crews of 2 fictivous spaceships.
+In this step we show you how to create your own IDP. The IDP provided in this example is very simple as it reads the authorizable data from a JSON file. The sample data in [authorizables.json](authorizables.json) provides the crews of 2 fictional spaceships.
 
 The code for the new IDP is located in the [example-idp](example-idp/) directory. The majority of the code is in the [JsonFileIdentityProvider.java](example-idp/src/main/java/com/adobe/gems/exampleidp/impl/JsonFileIdentityProvider.java) class. The code is very simple and should be self explanatory.
 
