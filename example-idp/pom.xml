@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
@@ -16,11 +15,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
     <modelVersion>4.0.0</modelVersion>
-
+    <!-- ====================================================================== -->
+    <!-- P A R E N T  P R O J E C T  D E S C R I P T I O N                      -->
+    <!-- ====================================================================== -->
     <parent>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>oak-parent</artifactId>
@@ -28,31 +28,24 @@
         <relativePath/>
     </parent>
 
+    <!-- ====================================================================== -->
+    <!-- P R O J E C T  D E S C R I P T I O N                                   -->
+    <!-- ====================================================================== -->
     <groupId>com.adobe.gems</groupId>
     <artifactId>com.adobe.gems.exampleidp</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Example IDP that reads users and groups from a json file</name>
+    <name>AEM 6.1 Gems Example IDP</name>
+    <description>Example IDP that reads users and groups from a json file</description>
     <packaging>bundle</packaging>
 
+    <!-- ====================================================================== -->
+    <!-- B U I L D                                                              -->
+    <!-- ====================================================================== -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <!--<configuration>-->
-                <!--<instructions>-->
-                <!--<Import-Package>-->
-                <!--!org.dom4j.*,-->
-                <!--!org.xmlpull.v1,-->
-                <!--!sun.net.util,-->
-                <!--*-->
-                <!--</Import-Package>-->
-                <!--<Embed-Dependency>-->
-                <!--api-all,commons-pool,commons-lang,mina-core,antlr-->
-                <!--</Embed-Dependency>-->
-                <!--<Embed-Transitive>true</Embed-Transitive>-->
-                <!--</instructions>-->
-                <!--</configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -70,37 +63,16 @@
         </plugins>
     </build>
 
+    <!-- ====================================================================== -->
+    <!-- D E P E N D E N C I E S                                                -->
+    <!-- ====================================================================== -->
     <dependencies>
-        <dependency>
-            <groupId>biz.aQute.bnd</groupId>
-            <artifactId>bndlib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-core</artifactId>
-            <version>1.2.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>oak-commons</artifactId>
-            <version>1.2.2</version>
-            <scope>provided</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-auth-external</artifactId>
             <version>1.2.2</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>org.apache.sling</groupId>
             <artifactId>org.apache.sling.commons.json</artifactId>
@@ -109,32 +81,20 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- JCR and Jackrabbit dependencies -->
-        <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
-        <!-- Findbugs annotations -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>

@@ -1,19 +1,21 @@
-/*************************************************************************
- * ADOBE CONFIDENTIAL
- * ___________________
- * <p/>
- * Copyright ${today.year} Adobe Systems Incorporated
- * All Rights Reserved.
- * <p/>
- * NOTICE:  All information contained herein is, and remains
- * the property of Adobe Systems Incorporated and its suppliers,
- * if any.  The intellectual and technical concepts contained
- * herein are proprietary to Adobe Systems Incorporated and its
- * suppliers and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Adobe Systems Incorporated.
- **************************************************************************/
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.adobe.gems.exampleidp.impl;
 
 import java.io.File;
@@ -27,6 +29,7 @@ import java.util.Map;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.jcr.Credentials;
 import javax.jcr.SimpleCredentials;
 import javax.security.auth.login.LoginException;
@@ -55,6 +58,31 @@ import org.slf4j.LoggerFactory;
  * {@code JsonFileIdentityProvider} implements an external identity provider that reads users and groups from
  * a simple json file. the structure is very simple, using the authorizable id as key. if the object has a 'members' property,
  * it is considered a group. all password are just plaintext.
+ *
+ * for simpler group membership lookup, we also store the groups in the user objects.
+ *
+ * Example:
+ *
+ * <xmp>
+ * {
+ *     "enterprise": {
+ *         "id": "enterprise",
+ *         "members": ["kirk", "spock"]
+ *     },
+ *     "kirk": {
+ *         "id": "kirk",
+ *         "fullname": "James T. Kirk",
+ *         "password": "pass",
+ *         "groups": ["enterprise"]
+ *     },
+ *     "spock": {
+ *         "id": "spock",
+ *         "fullname": "Spock",
+ *         "password": "pass",
+ *         "groups": ["enterprise"]
+ *     }
+ * }
+ * </xmp>
  */
 @Component(
         label = "JSON File Identity Provider",
@@ -64,6 +92,21 @@ import org.slf4j.LoggerFactory;
 )
 @Service
 public class JsonFileIdentityProvider implements ExternalIdentityProvider {
+
+    /**
+     * property name for members
+     */
+    public static final String PN_MEMBERS = "members";
+
+    /**
+     * property name for groups
+     */
+    public static final String PN_GROUPS = "groups";
+
+    /**
+     * property name for password
+     */
+    public static final String PN_PASSWORD = "password";
 
     /**
      * default logger
@@ -100,13 +143,21 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
     )
     public static final String PARAM_FILE_NAME = "filename";
 
+    /**
+     * name of this provider
+     */
     private String name;
 
+    /**
+     * configured filename
+     */
     private String fileName;
 
+    /**
+     * resolved json file
+     */
     private File jsonFile;
 
-    //----------------------------------------------------< SCR integration >---
     @SuppressWarnings("UnusedDeclaration")
     @Activate
     private void activate(Map<String, Object> properties) {
@@ -121,6 +172,9 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
     private void deactivate() {
     }
 
+    /**
+     * Initialized the provider and validates the properties.
+     */
     private void init() {
         if (jsonFile == null || !jsonFile.exists()) {
             try {
@@ -133,6 +187,12 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
         }
     }
 
+    /**
+     * Loads the authorizable JSON.
+     * @return the JSON object of the data.
+     * @throws IOException if an error occurrs
+     */
+    @Nonnull
     private JSONObject loadJSON() throws IOException {
         init();
         if (jsonFile != null) {
@@ -148,22 +208,83 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
         }
     }
 
+    /**
+     * Checks if the given identity reference has the same provider name as this one.
+     * @param ref the reference
+     * @return {@code true} if the reference originates from this provider.
+     */
     private boolean isMyRef(@Nonnull ExternalIdentityRef ref) {
         final String refProviderName = ref.getProviderName();
         return refProviderName == null || refProviderName.isEmpty() || getName().equals(refProviderName);
     }
 
-    private ExternalUser createUser(String id, JSONObject obj) throws JSONException {
-        ExternalIdentityRef ref = new ExternalIdentityRef(id, this.getName());
-        return new ExternalUserImpl(this, ref, id, convertJSONtoMap(obj));
+    /**
+     * Creates a new external identity of the given {@code type} or {@code null} if the type does not match the object
+     * @param id the id
+     * @param ref the extern reference or {@code null}
+     * @param obj the json data
+     * @param type the desired type
+     * @return the new identity or {@code null}
+     * @throws JSONException
+     */
+    @CheckForNull
+    private <T> T createIdentity(@Nonnull String id, @Nullable ExternalIdentityRef ref,
+                                 @Nullable JSONObject obj, @Nonnull Class<T> type) throws JSONException {
+        if (obj == null) {
+            return null;
+        }
+        if ((type == ExternalGroup.class || type == ExternalIdentity.class) && obj.has(PN_MEMBERS)) {
+            if (ref == null) {
+                ref = new ExternalIdentityRef(id, getName());
+            }
+            //noinspection unchecked
+            return (T) new ExternalGroupImpl(getName(), ref, id, convertJSONtoMap(obj));
+
+        } else if ((type == ExternalUser.class || type == ExternalIdentity.class) && !obj.has(PN_MEMBERS)) {
+            if (ref == null) {
+                ref = new ExternalIdentityRef(id, getName());
+            }
+            //noinspection unchecked
+            return (T) new ExternalUserImpl(getName(), ref, id, convertJSONtoMap(obj));
+        } else {
+            return null;
+        }
     }
 
-    private ExternalGroup createGroup(String id, JSONObject obj) throws JSONException {
-        ExternalIdentityRef ref = new ExternalIdentityRef(id, this.getName());
-        return new ExternalGroupImpl(this, ref, id, convertJSONtoMap(obj));
+    /**
+     * Returns an iterator over all identities of the given type
+     * @param type the type
+     * @return an iterator
+     * @throws ExternalIdentityException
+     */
+    @Nonnull
+    private <T> Iterator<T> listIdentities(@Nonnull Class<T> type) throws ExternalIdentityException {
+        try {
+            List<T> identities = new ArrayList<T>();
+            JSONObject obj = loadJSON();
+            JSONArray names = obj.names();
+            for (int i=0; i<names.length(); i++) {
+                String id = names.getString(i);
+                T identity = createIdentity(id, null, obj.getJSONObject(id), type);
+                if (identity != null) {
+                    identities.add(identity);
+                }
+            }
+            return identities.iterator();
+        } catch (Exception e) {
+            throw new ExternalIdentityException();
+        }
     }
 
-    private Map<String, Object> convertJSONtoMap(JSONObject obj) throws JSONException {
+
+    /**
+     * Simple helper that converts the given json object into a hash map non recursively.
+     * @param obj the json data
+     * @return a map for the data
+     * @throws JSONException if an error occurrs
+     */
+    @Nonnull
+    private Map<String, Object> convertJSONtoMap(@Nonnull JSONObject obj) throws JSONException {
         Map<String, Object> props = new HashMap<String, Object>();
         JSONArray names = obj.names();
         for (int i=0; i<names.length(); i++) {
@@ -200,13 +321,7 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
                 return null;
             }
             JSONObject obj = loadJSON().optJSONObject(ref.getId());
-            if (obj == null) {
-                return null;
-            } else if (obj.has("members")) {
-                return createGroup(ref.getId(), obj);
-            } else {
-                return createUser(ref.getId(), obj);
-            }
+            return createIdentity(ref.getId(), ref, obj, ExternalIdentity.class);
         } catch (Exception e) {
             throw new ExternalIdentityException(e);
         }
@@ -223,10 +338,7 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
     public ExternalUser getUser(@Nonnull String userId) throws ExternalIdentityException {
         try {
             JSONObject userObj = loadJSON().optJSONObject(userId);
-            if (userObj == null || userObj.has("members")) {
-                return null;
-            }
-            return createUser(userId, userObj);
+            return createIdentity(userId, null, userObj, ExternalUser.class);
         } catch (Exception e) {
             throw new ExternalIdentityException(e);
         }
@@ -247,14 +359,23 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
             throw new LoginException("invalid credentials class " + credentials.getClass());
         }
         try {
+            // extract the user id from the credentials and lookup the user
             SimpleCredentials sc = (SimpleCredentials) credentials;
             JSONObject userObj = loadJSON().optJSONObject(sc.getUserID());
+
+            // if the user does not exist, return null
             if (userObj == null) {
+                log.debug("authenticate: user '{}' not found in json file", sc.getUserID());
                 return null;
             }
-            String pwd = userObj.optString("password", "");
+            log.debug("authenticate: user '{}' found in json file.", sc.getUserID());
+
+            // verify the password and throw login exception on mismatch
+            String pwd = userObj.optString(PN_PASSWORD, "");
             if (pwd.equals(new String(sc.getPassword()))) {
-                return createUser(sc.getUserID(), userObj);
+                // if all good, return the user as external identity
+                log.debug("authenticate: users '{}' credentials validated.", sc.getUserID());
+                return createIdentity(sc.getUserID(), null, userObj, ExternalUser.class);
             } else {
                 throw new LoginException("invalid user or password");
             }
@@ -276,10 +397,7 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
     public ExternalGroup getGroup(@Nonnull String name) throws ExternalIdentityException {
         try {
             JSONObject grpObj = loadJSON().optJSONObject(name);
-            if (grpObj == null || !grpObj.has("members")) {
-                return null;
-            }
-            return createGroup(name, grpObj);
+            return createIdentity(name, null, grpObj, ExternalGroup.class);
         } catch (Exception e) {
             throw new ExternalIdentityException(e);
         }
@@ -293,21 +411,7 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
      */
     @Nonnull
     public Iterator<ExternalUser> listUsers() throws ExternalIdentityException {
-        try {
-            List<ExternalUser> users = new ArrayList<ExternalUser>();
-            JSONObject obj = loadJSON();
-            JSONArray names = obj.names();
-            for (int i=0; i<names.length(); i++) {
-                String id = names.getString(i);
-                JSONObject authObj = obj.getJSONObject(id);
-                if (!authObj.has("members")) {
-                    users.add(createUser(id, authObj));
-                }
-            }
-            return users.iterator();
-        } catch (Exception e) {
-            throw new ExternalIdentityException();
-        }
+        return listIdentities(ExternalUser.class);
     }
 
     /**
@@ -317,21 +421,7 @@ public class JsonFileIdentityProvider implements ExternalIdentityProvider {
      */
     @Nonnull
     public Iterator<ExternalGroup> listGroups() throws ExternalIdentityException {
-        try {
-            List<ExternalGroup> groups = new ArrayList<ExternalGroup>();
-            JSONObject obj = loadJSON();
-            JSONArray names = obj.names();
-            for (int i=0; i<names.length(); i++) {
-                String id = names.getString(i);
-                JSONObject authObj = obj.getJSONObject(id);
-                if (authObj.has("members")) {
-                    groups.add(createGroup(id, authObj));
-                }
-            }
-            return groups.iterator();
-        } catch (Exception e) {
-            throw new ExternalIdentityException();
-        }
+        return listIdentities(ExternalGroup.class);
     }
 
 }
