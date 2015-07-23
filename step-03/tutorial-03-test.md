@@ -6,7 +6,7 @@ Step 03 - Test that it works!
 
 In this step we verify that the LDAP authentication works and if the users are synced properly.
 
-**!** If you want to fast forward, here's the [ldap-config-with-profile-pkg.zip](ldap-config-with-profile-pkg.zip) package with the resuling configuration of this step.
+**!** If you want to fast forward, here's the [ldap-config-with-profile-pkg.zip](ldap-config-with-profile-pkg.zip) package with the resulting configuration of this step.
 
 
 ### Requirements
