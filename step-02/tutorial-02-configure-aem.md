@@ -6,7 +6,7 @@ Step 02 - Configure LDAP Authentication in AEM
 
 In this step we configure AEM 6.1 to use our newly created LDAP server for login.
 
-**!** If you want to fast forward, here's the [ldap-first-config-pkg.zip](ldap-first-config-pkg.zip) package with the resuling configuration of this step.
+**!** If you want to fast forward, here's the [ldap-first-config-pkg.zip](ldap-first-config-pkg.zip) package with the resulting configuration of this step.
 
 ### Requirements
 1. LDAP Server with example data (preferably from previous step 01)
