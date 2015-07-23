@@ -1,8 +1,6 @@
 AEM 6.1 LDAP Authentication Tutorial
 ====================================
 
-((DRAFT))
-
 Step 02 - Configure LDAP Authentication in AEM
 ----------------------------------------------
 
@@ -31,29 +29,29 @@ Now we configure the LDAP idp. this is the piece that connects to the LDAP serve
 Enter the following information:
 
 | Name | Value |
-|--------------------|------|
-| LDAP Provider Name | `ldap` |
-| LDAP Server Hostname	| `localhost` |
-| LDAP Server Port	| 10389 |
-| Use SSL | _false_ |
-| Use TLS | _false_ |
-| Disable certificate checking	| _false_ |
-| Bind DN | `uid=admin,ou=system` |
-| Bind Password	| `secret` |
-| Search Timeout | `60s` |
-| Admin pool max active	 | 8 |
-| User pool max active	| 8 |
-| User base DN | `ou=people,o=SevenSeas` |
-| User object classes | `person` |
-| User id attribute	| `uid` |
-| User extra filter	 |  |
-| User DN paths	| _false_ |
-| Group base DN	| `ou=groups,o=SevenSeas` |
-| Group object classes | `groupOfUniqueNames` |
-| Group name attribute	| `cn` |
-| Group extra filter | |
-| Group DN paths | _false_ |
-| Group member attribute | `uniquemember` |
+|------------------------------|-----------------
+| LDAP Provider Name           | `ldap`
+| LDAP Server Hostname         | `localhost`
+| LDAP Server Port             | 10389
+| Use SSL                      | _false_
+| Use TLS                      | _false_
+| Disable certificate checking	| _false_
+| Bind DN                      | `uid=admin,ou=system`
+| Bind Password                | `secret`
+| Search Timeout               | `60s`
+| Admin pool max active        | 8
+| User pool max active         | 8
+| User base DN                 | `ou=people,o=SevenSeas`
+| User object classes          | `person`
+| User id attribute            | `uid`
+| User extra filter            |
+| User DN paths                | _false_
+| Group base DN                | `ou=groups,o=SevenSeas`
+| Group object classes         | `groupOfUniqueNames`
+| Group name attribute         | `cn`
+| Group extra filter           |
+| Group DN paths               | _false_
+| Group member attribute       | `uniquemember`
 
 And save the config.
 
@@ -95,13 +93,13 @@ The external login module is the bridge between the login, the idp and the sync 
 
 Enter the following information:
 
-| Name | Value |
-|--------------------|------|
-| JAAS Ranking	| 50 |
-| JAAS Control Flag	| `SUFFICIENT` |
-| JAAS Realm | |
-| Identity Provider Name | `ldap` |
-| Sync Handler Name	| `default` |
+| Name                   | Value
+|------------------------|----------
+| JAAS Ranking           | 50
+| JAAS Control Flag      | `SUFFICIENT`
+| JAAS Realm             |
+| Identity Provider Name | `ldap`
+| Sync Handler Name      | `default`
 
 And save the config
 

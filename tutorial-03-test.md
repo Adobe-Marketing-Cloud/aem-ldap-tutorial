@@ -1,8 +1,6 @@
 AEM 6.1 LDAP Authentication Tutorial
 ====================================
 
-((DRAFT))
-
 Step 03 - Test that it works!
 -----------------------------
 
@@ -48,8 +46,31 @@ Enter the following information:
 | User Expiration Time          | `10s`
 | User property mapping         | `rep:fullname=cn` <br> `profile/nt:primaryType="nt:unstructured"` <br> `profile/givenName=givenname` <br> `profile/familyName=sn` |
 
-And save the config
+![image](test-02-newconfig.png)
 
-todo: add screen shot of new config
-todo: add screen shot of synced properties
+And save the config.
+
+Now if you logout and login again with `wbush` the user should be resynced.
+
+![image](test-03-useradmin-withprops.png)
+
+#### 3. use JMX console to sync more users
+
+Oak comes with a default JMX mbean that allows you to control the sync handler. 
+
+- open the [Felix JMX Console](http://localhost:4502/system/console/jmx) and search for the _"External Identity"_ bean and select it
+
+![image](test-04-jmx-console.png)
+
+![image](test-05-jmx-synchandler.png)
+
+- click on `syncAllExternalUsers()` and then on `invoke`. this will collect all the users from the IDP and sync them with the repository. you will see an `add` op property for all newly added users, and an `upd` for the updated ones.
+
+![image](test-06-jmx-syncexternalusers.png)
+
+checking back the user admin shows the newly imported users and groups
+
+![image](test-07-useradmin-more.png)
+
+
 
